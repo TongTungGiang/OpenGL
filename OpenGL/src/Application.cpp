@@ -119,6 +119,10 @@ int main(void)
 	if (!glfwInit())
 		return -1;
 
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
+
 	/* Create a windowed mode window and its OpenGL context */
 	window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
 	if (!window)
@@ -137,7 +141,7 @@ int main(void)
 
 	std::cout << glGetString(GL_VERSION) << std::endl;
 
-	/* Create the vertex buffer */
+	/* Geometry data */
 	float positions[] = {
 		-0.5f, -0.5f,
 		 0.5f, -0.5f,
@@ -151,6 +155,12 @@ int main(void)
 		2, 3, 0,
 	};
 
+	/* Vertex array */
+	unsigned int vertexArray;
+	GLCall(glGenVertexArrays(1, &vertexArray));
+	GLCall(glBindVertexArray(vertexArray));
+
+	/* Create the vertex buffer */
 	unsigned int vertexBuffer;
 	GLCall(glGenBuffers(1, &vertexBuffer));
 	GLCall(glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer));
@@ -173,6 +183,12 @@ int main(void)
 	ASSERT(location != -1);
 	GLCall(glUniform4f(location, 1.0f, 0.5f, 0.0f, 1.0f));
 
+	/* Unbind */
+	GLCall(glBindVertexArray(0));
+	GLCall(glUseProgram(0));
+	GLCall(glBindBuffer(GL_ARRAY_BUFFER, 0));
+	GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
+
 	float r = 0;
 
 	/* Loop until the user closes the window */
@@ -180,6 +196,13 @@ int main(void)
 	{
 		/* Render here */
 		glClear(GL_COLOR_BUFFER_BIT);
+
+		/* Bind data */
+		GLCall(glUseProgram(shader));
+		GLCall(glUniform4f(location, 1.0f, 0.5f, 0.0f, 1.0f));
+
+		GLCall(glBindVertexArray(vertexArray));
+		GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer));
 
 		/* Make the draw call */
 		GLCall(glUniform4f(location, r, 0.5f, 0.0f, 1.0f));
