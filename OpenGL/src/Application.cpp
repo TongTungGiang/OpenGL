@@ -9,6 +9,7 @@
 #include "IndexBuffer.h"
 #include "VertexArray.h"
 #include "Shader.h"
+#include "Texture.h"
 
 int main(void)
 {
@@ -40,12 +41,15 @@ int main(void)
 
 	std::cout << glGetString(GL_VERSION) << std::endl;
 
+	GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
+	GLCall(glEnable(GL_BLEND));
+
 	/* Geometry data */
 	float positions[] = {
-		-0.5f, -0.5f,
-		 0.5f, -0.5f,
-		 0.5f, 0.5f,
-		 -0.5f, 0.5f,
+		-0.5f, -0.5f, 0.0f, 0.0f,
+		 0.5f, -0.5f, 1.0f, 0.0f,
+		 0.5f, 0.5f, 1.0f, 1.0f,
+		 -0.5f, 0.5f, 0.0f, 1.0f
 	};
 
 	unsigned int indices[]
@@ -56,9 +60,10 @@ int main(void)
 
 	/* Vertex array */
 	VertexArray va;
-	VertexBuffer vb(positions, 4 * 2 * sizeof(float));
+	VertexBuffer vb(positions, 4 * 4 * sizeof(float));
 
 	VertexBufferLayout layout;
+	layout.Push<float>(2);
 	layout.Push<float>(2);
 
 	va.AddBuffer(vb, layout);
@@ -70,6 +75,11 @@ int main(void)
 	shader.Bind();
 
 	shader.SetUniform4f("u_Color", 1.0f, 0.5f, 0.0f, 1.0f);
+
+	/* Texture */
+	Texture texture("res/textures/skull.png");
+	texture.Bind();
+	shader.SetUniform1i("u_Texture", 0);
 
 	/* Unbind */
 	va.Unbind();
@@ -87,14 +97,6 @@ int main(void)
 		/* Render here */
 		renderer.Clear();
 		renderer.Draw(va, ib, shader);
-
-		/* Update */
-		shader.SetUniform4f("u_Color", r, 0.5f, 0.0f, 1.0f);
-
-		if (r > 1.0f)
-			r = 0.0f;
-		else
-			r += 0.05f;
 
 		/* Swap front and back buffers */
 		glfwSwapBuffers(window);
