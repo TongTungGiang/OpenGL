@@ -77,22 +77,19 @@ int main(void)
 	vb.Unbind();
 	ib.Unbind();
 
+	Renderer renderer;
+	
 	float r = 0;
 
 	/* Loop until the user closes the window */
 	while (!glfwWindowShouldClose(window))
 	{
 		/* Render here */
-		glClear(GL_COLOR_BUFFER_BIT);
+		renderer.Clear();
+		renderer.Draw(va, ib, shader);
 
-		/* Bind data */
-		shader.Bind();
+		/* Update */
 		shader.SetUniform4f("u_Color", r, 0.5f, 0.0f, 1.0f);
-
-		va.Bind();
-		ib.Bind();
-
-		GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr));
 
 		if (r > 1.0f)
 			r = 0.0f;
