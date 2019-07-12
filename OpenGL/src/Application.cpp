@@ -49,10 +49,10 @@ int main(void)
 
 	/* Geometry data */
 	float positions[] = {
-		-0.5f, -0.5f, 0.0f, 0.0f,
-		 0.5f, -0.5f, 1.0f, 0.0f,
-		 0.5f, 0.5f, 1.0f, 1.0f,
-		 -0.5f, 0.5f, 0.0f, 1.0f
+		 100.0f, 100.0f, 0.0f, 0.0f,
+		 200.0f, 100.0f, 1.0f, 0.0f,
+		 200.0f, 200.0f, 1.0f, 1.0f,
+		 100.0f, 200.0f, 0.0f, 1.0f
 	};
 
 	unsigned int indices[]
@@ -78,8 +78,13 @@ int main(void)
 	shader.Bind();
 
 	/* Projection matrix for 4:3 ratio */
-	glm::mat4 proj = glm::ortho(-2.0f, 2.0f, -1.5f, 1.5f, -1.0f, 1.0f);
-	shader.SetUniformMat4f("u_MVP", proj);
+	glm::mat4 proj = glm::ortho(0.0f, 960.0f, 0.0f, 720.0f, -1.0f, 1.0f);
+	glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(-100, 0, 0));
+	glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(200, 200, 0));
+
+	glm::mat4 mvp = proj * view * model;
+
+	shader.SetUniformMat4f("u_MVP",  mvp);
 
 	/* Texture */
 	Texture texture("res/textures/skull.png");
