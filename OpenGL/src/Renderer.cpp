@@ -1,10 +1,13 @@
 #include "Renderer.h"
 
 #include <iostream>
+#include <sstream>
 
 #include "VertexArray.h"
 #include "IndexBuffer.h"
 #include "Shader.h"
+
+#include "Debug.h"
 
 void GLClearError()
 {
@@ -15,7 +18,10 @@ bool GLLogCall(const char* function, const char* file, int line)
 {
 	while (GLenum error = glGetError())
 	{
-		std::cout << "[OpenGL Error] " << error << ": " << function << " " << file << " " << line << std::endl;
+		std::stringstream ss;
+		ss << "[OpenGL Error] " << error << ": " << function << " " << file << " " << line;
+		Debug::LogError(ss.str());
+
 		return false;
 	}
 
